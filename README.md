@@ -1,4 +1,4 @@
-# vue-ssr-example
+# my-project
 
 > A Vue.js project
 
