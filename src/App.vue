@@ -16,17 +16,37 @@
       <li><a href="http://vue-loader.vuejs.org/" target="_blank">vue-loader</a></li>
       <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
     </ul>
+    <input type="number" v-model="stopId" placeholder="Please type a stop ID" value=13649>
+      <button type="button" @click="fetch">Fetch</button>
+      <ul>
+        <li v-for="line in lines">
+          {{ line }}
+        </li>
+      </ul>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'app',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: 'Welcome to Your Vue.js App',
+      lines: []
     }
-  }
+  },
+  methods: {
+   fetch: function() {
+     axios
+     .get('/api/fetch/' + this.stopId)
+     .then(resp => {
+       this.lines = resp.data
+     })
+     .catch(console.log)
+   }
+ }
 }
 </script>
 
