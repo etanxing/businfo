@@ -1,8 +1,12 @@
 <template>
-  <div id="app">
-    <h1>{{ msg }}</h1>
-    <stop-card></stop-card>
-    <stop-card></stop-card>
+  <div class="stop-card">
+    <input type="number" v-model="stopId" placeholder="Please type a stop ID"/>
+    <button type="button" @click="fetch">Fetch</button>
+    <ul>
+      <li v-for="line in lines">
+        {{ line.line }} To {{ line.destination }} {{ line.arrivalTime | localTime }}
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -11,11 +15,10 @@ import axios from 'axios'
 import moment from 'moment'
 
 export default {
-  name: 'app',
+  name: 'stop-card',
   data() {
     return {
-      stopId: 13294,
-      msg: 'Welcome to Your Vue.js App',
+      stopId: '',
       lines: []
     }
   },
@@ -40,30 +43,7 @@ export default {
 </script>
 
 <style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-
-h1, h2 {
-  font-weight: normal;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-
-a {
-  color: #42b983;
+.stop-card {
+  padding: 1rem;
 }
 </style>
