@@ -1,16 +1,20 @@
 <template>
   <div class="stop-card">
     <section class="stop-card-input" v-show="!showResult">
-      <form>
-        <div class="form-group">
-          <input type="number" v-model="stopId" placeholder="Please type a stop ID"/>
-          <input type="number" v-model="lineRule" placeholder="Match line"/>
-        </div>
-        <button type="button" @click="fetch" class="btn btn-default">Fetch</button>
-      </form>
+      <el-row :gutter="10">
+        <el-col :xs="8">
+          <el-input type="number" v-model="stopId" placeholder="Please type a stop ID"></el-input>
+        </el-col>
+        <el-col :xs="8">
+          <el-input type="number" v-model="lineRule" placeholder="Match line"></el-input>
+        </el-col>
+        <el-col :xs="8">
+          <el-button @click="fetch">Fetch</el-button>
+        </el-col>
+      </el-row>
     </section>
     <section class="stop-card-result" v-show="showResult">
-      <button type="button" @click="change" class="btn btn-default">Change</button>
+      <el-button @click="change">Change</el-button>
       <h5>Last updated at {{responseTimestamp | updateDatetime}}</h5>
       <ul>
         <li v-for="line in matchLines">
@@ -63,7 +67,7 @@ export default {
           .then(resp => {
             this.lines = resp.data.lines
             this.responseTimestamp = resp.data.responseTimestamp
-            this.timeoutID = window.setTimeout(this.request, 1000 * 30);
+            this.timeoutID = window.setTimeout(this.request, 1000 * 30)
           })
           .catch(error => {
             console.log(error)
@@ -83,7 +87,7 @@ export default {
     },
     updateDatetime: function(value) {
       if (!value) return ''
-      return moment(value).format("h:mm:ss a")
+      return moment(value).format('h:mm:ss a')
     },
     timeToNow: function(value) {
       if (!value) return ''
