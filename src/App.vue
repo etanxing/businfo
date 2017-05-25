@@ -1,23 +1,40 @@
 <template>
   <div id="app">
     <template v-for="card in cards">
-      <stop-card :initial-stop-id=card></stop-card>
+      <stop-card :initial-stop-id=card.stopId :initial-line-rule=card.lineRule></stop-card>
     </template>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
-import moment from 'moment'
+import axios from "axios";
+import moment from "moment";
 
 export default {
-  name: 'app',
+  name: "app",
   data() {
     return {
-      cards: [13348,13674,13664,13662]
-    }
-  },
-}
+      cards: [
+        {
+          stopId: 13348,
+          lineRule: "82"
+        },
+        {
+          stopId: 13674,
+          lineRule: "82"
+        },
+        {
+          stopId: 13664,
+          lineRule: "82"
+        },
+        {
+          stopId: 13662,
+          lineRule: "82"
+        }
+      ]
+    };
+  }
+};
 </script>
 
 <style lang="scss">
@@ -26,7 +43,6 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-  margin-top: 60px;
 }
 
 h1, h2 {

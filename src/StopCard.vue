@@ -1,19 +1,23 @@
 <template>
   <div class="stop-card">
     <section class="stop-card-input" v-show="!showResult">
-      <input type="number" v-model="stopId" placeholder="Please type a stop ID"/>
-      <input type="number" v-model="lineRule" placeholder="Match line"/>
-      <button type="button" @click="fetch">Fetch</button>
+      <form>
+        <div class="form-group">
+          <input type="number" v-model="stopId" placeholder="Please type a stop ID"/>
+          <input type="number" v-model="lineRule" placeholder="Match line"/>
+        </div>
+        <button type="button" @click="fetch" class="btn btn-default">Fetch</button>
+      </form>
     </section>
     <section class="stop-card-result" v-show="showResult">
-      <button type="button" @click="change">Change</button>
+      <button type="button" @click="change" class="btn btn-default">Change</button>
       <h5>Last updated at {{responseTimestamp | updateDatetime}}</h5>
       <ul>
         <li v-for="line in matchLines">
           {{ line.line }} To {{ line.destination }} {{ line.arrivalTime | timeToNow}} ({{ line.arrivalTime | localTime }})
         </li>
       </ul>
-      <p v-show="matchLines.length === 0">No real-time data {{ lineRule? 'matched "' + lineRule : '"'}}</p>
+      <p v-show="matchLines.length === 0">No real-time data {{ lineRule? ('matched "' + lineRule + '"') : ''}}</p>
     </section>
   </div>
 </template>
@@ -30,7 +34,6 @@ export default {
       showResult: false,
       stopId: this.initialStopId,
       lineRule: this.initialLineRule,
-      lineRule: '',
       lines: [],
       responseTimestamp: '',
       isPaused: false
