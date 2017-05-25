@@ -9,6 +9,15 @@ const index = fs.readFileSync('./index.html', 'utf-8')
 const url =
   'http://realtime.adelaidemetro.com.au/SiriWebServiceSAVM/SiriStopMonitoring.svc/json/SM?MonitoringRef='
 
+const evalDate = (dateString) => {
+  return eval(
+    'new ' +
+      dateString.match(
+        /Date\(\S+\)/
+      )[0]
+  )
+}
+
 const fetchStop = function(stopId, cb) {
   axios
     .get(url + stopId)
@@ -17,27 +26,25 @@ const fetchStop = function(stopId, cb) {
       const lines = []
       if (data.StopMonitoringDelivery && data.StopMonitoringDelivery[0]) {
         const SMD = data.StopMonitoringDelivery[0]
+        const responseTimestamp = evalDate(SMD.ResponseTimestamp)
         const visit = SMD.MonitoredStopVisit
 
         if (visit) {
           for (const { MonitoredVehicleJourney } of visit) {
-            const arrivalTime = eval(
-              'new ' +
-                MonitoredVehicleJourney.MonitoredCall.LatestExpectedArrivalTime.match(
-                  /Date\(\S+\)/
-                )[0]
-            )
             lines.push({
               line: MonitoredVehicleJourney.LineRef.Value,
               destination: MonitoredVehicleJourney.DestinationName[0].Value,
-              arrivalTime
+              arrivalTime: evalDate(MonitoredVehicleJourney.MonitoredCall.LatestExpectedArrivalTime)
             })
           }
         } else {
           console.log('No MonitoredStopVisit')
         }
 
-        cb(lines)
+        cb({
+          responseTimestamp,
+          lines
+        })
       } else {
         console.log('No StopMonitoringDelivery')
       }

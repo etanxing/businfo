@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <h1>{{ msg }}</h1>
-    <stop-card></stop-card>
-    <stop-card></stop-card>
+    <template v-for="card in cards">
+      <stop-card :initial-stop-id=card></stop-card>
+    </template>
   </div>
 </template>
 
@@ -14,28 +14,9 @@ export default {
   name: 'app',
   data() {
     return {
-      stopId: 13294,
-      msg: 'Welcome to Your Vue.js App',
-      lines: []
+      cards: [13348,13674,13664,13662]
     }
   },
-  methods: {
-    fetch: function() {
-      axios
-        .get('http://localhost:3000/api/fetch/' + this.stopId)
-        .then(resp => {
-          this.lines = resp.data
-        })
-        .catch(console.log)
-    }
-  },
-  filters: {
-    localTime: function(value) {
-      if (!value) return ''
-      value = moment(value).format('h:mm a')
-      return value
-    }
-  }
 }
 </script>
 
@@ -44,23 +25,12 @@ export default {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
   margin-top: 60px;
 }
 
 h1, h2 {
   font-weight: normal;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  display: inline-block;
-  margin: 0 10px;
 }
 
 a {
