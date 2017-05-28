@@ -2,19 +2,28 @@
   <div class="stop-card">
     <section class="stop-card-input" v-show="!showResult">
       <el-row :gutter="10">
-        <el-col :xs="8">
-          <el-input type="number" v-model="stopId" placeholder="Please type a stop ID"></el-input>
+        <el-col :span="24">
+          <el-autocomplete
+            size="large"
+            type="number"
+            v-model="stopName"
+            :fetch-suggestions="querySearchAsync"
+            :trigger-on-focus="false"
+            @select="handleSelect"
+            placeholder="Stop code/name"></el-autocomplete>
         </el-col>
-        <el-col :xs="8">
-          <el-input type="number" v-model="lineRule" placeholder="Match line"></el-input>
+      </el-row>
+      <el-row :gutter="10">
+        <el-col :xs="12">
+          <el-input size="large" type="number" v-model="lineRule" placeholder="Line number"></el-input>
         </el-col>
-        <el-col :xs="8">
-          <el-button @click="fetch">Fetch</el-button>
+        <el-col :xs="12">
+          <el-button @click="fetch" size="large" type="primary" :disabled="!stopCode" :loading="isFetching">Fetch</el-button>
         </el-col>
       </el-row>
     </section>
     <section class="stop-card-result" v-show="showResult">
-      <el-button @click="change">Change</el-button>
+      <el-button @click="change" type="primary">Change</el-button>
       <h5>Last updated at {{responseTimestamp | updateDatetime}}</h5>
       <ul>
         <li v-for="line in matchLines">
@@ -32,15 +41,17 @@ import moment from 'moment'
 
 export default {
   name: 'stop-card',
-  props: ['initialStopId', 'initialLineRule'],
+  props: ['initialStopName', 'initialLineRule', 'initialStopCode'],
   data() {
     return {
       showResult: false,
-      stopId: this.initialStopId,
+      stopName: this.initialStopName,
+      stopCode: this.initialStopCode,
       lineRule: this.initialLineRule,
       lines: [],
       responseTimestamp: '',
-      isPaused: false
+      isPaused: false,
+      isFetching: false
     }
   },
   computed: {
@@ -52,7 +63,7 @@ export default {
   },
   methods: {
     fetch: function() {
-      this.showResult = true
+      this.isFetching = true
       this.request()
     },
     change: function() {
@@ -63,10 +74,12 @@ export default {
       if (!this.isPaused) {
         this.clearTimeout()
         axios
-          .get('/api/fetch/' + this.stopId)
+          .get('/api/fetch/' + this.stopCode)
           .then(resp => {
             this.lines = resp.data.lines
             this.responseTimestamp = resp.data.responseTimestamp
+            this.isFetching = false
+            this.showResult = true
             this.timeoutID = window.setTimeout(this.request, 1000 * 30)
           })
           .catch(error => {
@@ -78,6 +91,18 @@ export default {
     },
     clearTimeout: function() {
       if (this.timeoutID) window.clearTimeout(this.timeoutID)
+    },
+    querySearchAsync: function(queryString, cb) {
+      if (queryString.length > 3) {
+        axios
+        .get('/api/search/' + queryString.toLowerCase())
+        .then(resp => {
+          cb(resp.data)
+        })
+      }
+    },
+    handleSelect(item) {
+      this.stopCode = item.code
     }
   },
   filters: {
@@ -99,6 +124,11 @@ export default {
 
 <style lang="scss">
 .stop-card {
-  padding: 1rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid #555;
+  .el-autocomplete {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
 }
 </style>

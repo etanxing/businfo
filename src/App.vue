@@ -1,35 +1,42 @@
 <template>
   <div id="app">
     <template v-for="card in cards">
-      <stop-card :initial-stop-id=card.stopId :initial-line-rule=card.lineRule></stop-card>
+      <stop-card
+        :initial-stop-name=card.stopName
+        :initial-line-rule=card.lineRule
+        :initial-stop-code=card.stopCode></stop-card>
     </template>
   </div>
 </template>
 
 <script>
-import axios from "axios";
-import moment from "moment";
+import axios from 'axios';
+import moment from 'moment';
 
 export default {
-  name: "app",
+  name: 'app',
   data() {
     return {
       cards: [
         {
-          stopId: 13348,
-          lineRule: "82"
+          stopCode: 13348,
+          stopName: 'Stop E1 Currie St - North side',
+          lineRule: ''
         },
         {
-          stopId: 13674,
-          lineRule: "82"
+          stopCode: 16287,
+          stopName: 'Stop V2 King William St - West side',
+          lineRule: ''
         },
         {
-          stopId: 13664,
-          lineRule: "82"
+          stopCode: '',
+          stopName: '',
+          lineRule: ''
         },
         {
-          stopId: 13662,
-          lineRule: "82"
+          stopCode: '',
+          stopName: '',
+          lineRule: ''
         }
       ]
     };

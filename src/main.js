@@ -1,9 +1,10 @@
 import Vue from 'vue'
-import { Button, Input, Row, Col } from 'element-ui'
+import { Button, Input, Row, Col, Autocomplete } from 'element-ui'
 import App from './App.vue'
 import StopCard from './StopCard.vue'
 
 // register
+Vue.use(Autocomplete)
 Vue.use(Button)
 Vue.use(Input)
 Vue.use(Row)
