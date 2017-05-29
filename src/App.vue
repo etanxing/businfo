@@ -1,11 +1,17 @@
 <template>
   <div id="app">
+    <h2><i>Metro</i>Stops🚏</h2>
     <template v-for="card in cards">
       <stop-card
         :initial-stop-name=card.stopName
         :initial-line-rule=card.lineRule
         :initial-stop-code=card.stopCode></stop-card>
     </template>
+    <footer>
+      <p>Built with ❤️ and <a herf="https://vuejs.org/" target="_blank">Vuejs</a></p>
+
+      <a href="mailto:william@workswell.com.au?subject=MetroStops" class="el-button el-button--primary el-button--large"><span>Contact Us 🚌</span></a>
+    </footer>
   </div>
 </template>
 
@@ -54,6 +60,20 @@ export default {
 
 h1, h2 {
   font-weight: normal;
+  text-align: center;
+  font-weight: 700;
+  color: #2897D0;
+  i {
+    color: #133D68;
+  }
+}
+
+footer {
+  text-align: center;
+  padding-top: 1rem;
+  a {
+    text-decoration: none;
+  }
 }
 
 a {

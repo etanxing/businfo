@@ -125,7 +125,7 @@ export default {
 <style lang="scss">
 .stop-card {
   padding: 0.5rem;
-  border-bottom: 1px solid #555;
+  border-bottom: 1px solid #888888;
   .el-autocomplete {
     width: 100%;
     margin-bottom: 0.5rem;
