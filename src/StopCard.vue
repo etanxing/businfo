@@ -14,10 +14,10 @@
         </el-col>
       </el-row>
       <el-row :gutter="10">
-        <el-col :xs="12">
+        <el-col :xs="12" :sm="12" :md="12" :lg="12">
           <el-input size="large" type="number" v-model="lineRule" placeholder="Line number"></el-input>
         </el-col>
-        <el-col :xs="12">
+        <el-col :xs="12" :sm="12" :md="12" :lg="12">
           <el-button @click="fetch" size="large" type="primary" :disabled="!stopCode" :loading="isFetching">Fetch</el-button>
         </el-col>
       </el-row>
@@ -125,7 +125,7 @@ export default {
 <style lang="scss">
 .stop-card {
   padding: 0.5rem;
-  border-bottom: 1px solid #888888;
+  border-bottom: 1px solid #eeeeee;
   .el-autocomplete {
     width: 100%;
     margin-bottom: 0.5rem;
