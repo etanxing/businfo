@@ -106,3 +106,38 @@ app.get('/', function(req, res) {
 app.listen(process.env.PORT || 3000, function() {
   console.log('Example app listening on port 3000!')
 })
+
+// Imports the Google Cloud client library
+const Translate = require('@google-cloud/translate');
+
+// Your Google Cloud Platform project ID
+const projectId = 'api-project-381501853782';
+
+// Instantiates a client
+const translateClient = Translate({
+  projectId: projectId
+});
+
+// The text to translate
+const text = 'Hello, world!';
+// The target language
+const target = 'zh-CN';
+
+app.get('/api/translate/:text', (req, res) => {
+  const text = req.params.text
+  console.log('translating...')
+  // Translates some text into Russian
+  translateClient.translate(text, target)
+    .then((results) => {
+      const translation = results[0];
+      res.send({
+        text,
+        translation
+      })
+    })
+    .catch((err) => {
+      res.send({
+        error: err
+      })
+    });
+})
