@@ -3,6 +3,9 @@ const path = require('path')
 const express = require('express')
 const cors = require('cors')
 const axios = require('axios')
+const request = require('request')
+const cheerio = require('cheerio')
+const {version} = require('./package.json')
 const app = express()
 const index = fs.readFileSync('./index.html', 'utf-8')
 const CsvDb = require('./csv-db/facade')
@@ -66,7 +69,7 @@ const fetchStop = function(stopId, cb) {
     .catch(console.log)
 }
 
-const formatResult = (list) => {
+const formatResult = list => {
   return list.map(item => {
     return {
       value: item.stop_name,
@@ -82,7 +85,20 @@ if (process.env.NODE_ENV === 'dev') {
 
 app.get('/api/fetch/:stopId', (req, res) => {
   const stopId = req.params.stopId
+  const c_version = req.query.version
   fetchStop(stopId, function(data) {
+    if (c_version != version) {
+      switch (c_version) {
+        default:
+          data.action = {
+            type: 'message', //alert, message, messagebox, notification
+            message: {
+              message: 'The new version avaiable, please refresh',
+              showClose: true
+            }
+          }
+      }
+    }
     res.send(data)
   })
 })
@@ -103,41 +119,75 @@ app.get('/', function(req, res) {
   res.send(index)
 })
 
+app.get('/api/scrape', (req, res) => {
+  const url = req.query.url
+  url &&
+    request(url, function(error, response, html) {
+      if (!error) {
+        const $ = cheerio.load(html)
+        const user = $('.u-size12of12.js-postMetaLockup')
+        const username = user.find('.u-flex1 a')
+        const userdisp = username.next().next()
+        const userdate = userdisp.next()
+        const userreading = userdate.find('.readingTime').attr('title')
+
+        const post = $($('.postArticle-content')[0])
+        removeAttr(post[0])
+
+        res.send(`${username.text()} ${userdisp.text()} ${userdate.text()} ${userreading} ${post.html()}`)
+      }
+    })
+})
+
+function removeAttr(node) {
+  if (node.children) {
+    var i = node.children.length
+    while (i--) {
+      removeAttr(node.children[i])
+    }
+  }
+
+  for (var attrib in node.attribs) {
+    $(node).removeAttr(attrib)
+  }
+}
+
 app.listen(process.env.PORT || 3000, function() {
   console.log('Example app listening on port 3000!')
 })
 
 // Imports the Google Cloud client library
-const Translate = require('@google-cloud/translate');
+const Translate = require('@google-cloud/translate')
 
 // Your Google Cloud Platform project ID
-const projectId = 'api-project-381501853782';
+const projectId = 'api-project-381501853782'
 
 // Instantiates a client
 const translateClient = Translate({
   projectId: projectId
-});
+})
 
 // The text to translate
-const text = 'Hello, world!';
+const text = 'Hello, world!'
 // The target language
-const target = 'zh-CN';
+const target = 'zh-CN'
 
 app.get('/api/translate/:text', (req, res) => {
   const text = req.params.text
   console.log('translating...')
   // Translates some text into Russian
-  translateClient.translate(text, target)
-    .then((results) => {
-      const translation = results[0];
+  translateClient
+    .translate(text, target)
+    .then(results => {
+      const translation = results[0]
       res.send({
         text,
         translation
       })
     })
-    .catch((err) => {
+    .catch(err => {
       res.send({
         error: err
       })
-    });
+    })
 })

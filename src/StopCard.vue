@@ -10,14 +10,17 @@
             :fetch-suggestions="querySearchAsync"
             :trigger-on-focus="false"
             @select="handleSelect"
-            placeholder="Stop code/name"></el-autocomplete>
+            placeholder="Stop code/name">
+          </el-autocomplete>
         </el-col>
       </el-row>
       <el-row :gutter="10">
-        <el-col :xs="12" :sm="12" :md="12" :lg="12">
-          <el-input size="large" type="number" v-model="lineRule" placeholder="Line number"></el-input>
+        <el-col :xs="14" :sm="14" :md="14" :lg="14">
+          <el-input size="large" type="number" v-model="lineRule" placeholder="Line number">
+            <template slot="prepend">{{stopCode}}</template>
+          </el-input>
         </el-col>
-        <el-col :xs="12" :sm="12" :md="12" :lg="12">
+        <el-col :xs="10" :sm="10" :md="10" :lg="10">
           <el-button @click="fetch" size="large" type="primary" :disabled="!stopCode" :loading="isFetching">Fetch</el-button>
         </el-col>
       </el-row>
@@ -38,20 +41,31 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
+import URI from 'urijs'
+import { version } from '../package.json'
+
+const url = new URI(window.location.search)
+axios.defaults.params = { version }
 
 export default {
   name: 'stop-card',
-  props: ['initialStopName', 'initialLineRule', 'initialStopCode'],
+  props: ['index', 'initialStopName', 'initialLineRule', 'initialStopCode'],
   data() {
     return {
       showResult: false,
       stopName: this.initialStopName,
       stopCode: this.initialStopCode,
-      lineRule: this.initialLineRule,
+      lineRule: this.initialLineRule || '',
       lines: [],
       responseTimestamp: '',
       isPaused: false,
       isFetching: false
+    }
+  },
+  watch: {
+    lineRule: function(val) {
+      url.setSearch(`stop${this.index + 1}line`, val)
+      history.pushState({}, '', url.normalizeQuery())
     }
   },
   computed: {
@@ -81,6 +95,7 @@ export default {
             this.isFetching = false
             this.showResult = true
             this.timeoutID = window.setTimeout(this.request, 1000 * 30)
+            resp.data.action && this.handleServerAction(resp.data.action)
           })
           .catch(error => {
             console.log(error)
@@ -94,15 +109,26 @@ export default {
     },
     querySearchAsync: function(queryString, cb) {
       if (queryString.length > 3) {
-        axios
-        .get('/api/search/' + queryString.toLowerCase())
-        .then(resp => {
+        axios.get('/api/search/' + queryString.toLowerCase()).then(resp => {
           cb(resp.data)
         })
       }
     },
     handleSelect(item) {
       this.stopCode = item.code
+      url.setSearch(`stop${this.index + 1}code`, item.code)
+      url.setSearch(`stop${this.index + 1}name`, item.value)
+      history.pushState({}, '', url.normalizeQuery())
+    },
+    handleServerAction(action) {
+      switch (action.type) {
+        case 'message':
+          const message = action[action.type]
+          this.$message(message)
+          break
+        default:
+          break
+      }
     }
   },
   filters: {
